@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Self paced reading stuff</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+  <h3 style='color:red'>This place is for dashed sentences only!</h3>
+
+</body>
+<p><b>What are you doing here?</b></p>
+<div id="sent">{{sent}}</div>
+<ul>
+  <li><b>Now there is only one demo sentence</b></li>
+  <li><b>The function to read stimuli from .csv is being developed</b></li>
+  <li><b>The authentication is also being developed</b></li>
+</ul>
+<script>
+  let sentenseID = -1;
+  var wordCount = 0;
+  document.addEventListener("keypress",
+    function (e) {
+      if (e.keyCode == 13) {
+          loadSent();
+          wordCount = wordCount + 1;
+          //alert(cnt);
+        }
+      }
+    )
+</script>
+<script>
+
+  function sleep(milliseconds) {
+    const date = Date.now();
+    let currentDate = null;
+    do {
+      currentDate = Date.now();
+    } while (currentDate - date < milliseconds);
+  }
+
+  function loadSent() {
+    $.ajax({
+      url: '/go/' + wordCount.toString(),
+      type: 'POST',
+      data: '{"sentense_id": ' + sentenseID + '}',
+      dataType: 'json',
+      success: function (data) {
+        //	 alert(data);
+        let r = data;
+        if (r.sentense_id == -1) {
+          // reset the state
+          sentenseID = -1;
+          wordCount = 0;
+          alert("You have finished this sentense. Press enter again to get a new sentense!");
+        }
+        else {
+          sentenseID = r.sentense_id;
+          $(sent).replaceWith(r.body);
+        }
+        //	 sleep(0);
+      }
+    });
+  }
+
+</script>
+
+</html>
